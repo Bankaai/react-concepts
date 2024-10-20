@@ -1,42 +1,49 @@
-import { useState } from 'react'
-import { memo } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';  // Import axios if not imported
+import './App.css';
 
-import './App.css'
+// Define the Userfunction component
+function Userfunction() {
+  const [users, setUsers] = useState([]);
 
-const Header = memo( function({title}){
-  console.log("memo called");
-  return <div>
-    Title
-  </div>
-} )
+  // Fetch data from the server when the component mounts
+  useEffect(() => {
+    async function backend() {
+      try {
+        const response = await axios.get("http://localhost:3000/api/v1/user/bulk");
+        const data = response.data.users; // Assuming response has a `data` object with `users` field
+        
+        // Set the state variable to the fetched data
+        setUsers(data);
+      } catch (error) {
+        console.error("Error encountered", error);
+      }
+    }
 
-
-function App() {
-  const [title,setTitle] = useState("default");
-
-  function changeTitle(){
-    setTitle("Latest : " )
-  }
-
-  console.log("re-render");
-
-  // Here only the header with the title reloads and not the hardcoded values i passed along as 
-  // the function is being memoised
-  
+    backend();
+  }, []);  // Empty dependency array ensures this runs only once after the initial render
 
   return (
-   <div>
-    <button onClick={changeTitle}>CHANGE TITLE</button>
-    <Header title={title}/>
-    <br/>
-
-    <Header title = "hardcoded"/>
-    <Header title = "hardcoded"/>
-    <Header title = "hardcoded"/>
-    <Header title = "hardcoded"/>
-
-   </div>
-  )
+    <div>
+      <h1>User List</h1>
+      <ul>
+        {/* Map over the users array and render the list */}
+        {users.map((user) => (
+          <li key={user.id}>
+            ID: {user.id}, Username: {user.username}, Password: {user.password}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 }
 
-export default App
+function App() {
+  return (
+    <div>
+      <Userfunction />
+    </div>
+  );
+}
+
+export default App;
