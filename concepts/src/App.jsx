@@ -1,37 +1,40 @@
 import { useState } from 'react'
+import { memo } from 'react';
 
 import './App.css'
 
-function Header({title}){
+const Header = memo( function({title}){
+  console.log("memo called");
   return <div>
-    {title}
+    Title
   </div>
-}
+} )
 
-function HeaderWithButton(){
-  
-  const[title,setTitle] = useState("Default");
-
-  
-
-  function changeTitle(){
-    setTitle("new Title");
-  }
-
-  return<>
-    <button onClick={changeTitle}>Change Title</button>
-    <Header title={title}/>
-  </>
-
-}
 
 function App() {
+  const [title,setTitle] = useState("default");
+
+  function changeTitle(){
+    setTitle("Latest : " )
+  }
+
   console.log("re-render");
+
+  // Here only the header with the title reloads and not the hardcoded values i passed along as 
+  // the function is being memoised
   
+
   return (
    <div>
-   <HeaderWithButton/>
-   <Header title= "Hardcoded title"/>
+    <button onClick={changeTitle}>CHANGE TITLE</button>
+    <Header title={title}/>
+    <br/>
+
+    <Header title = "hardcoded"/>
+    <Header title = "hardcoded"/>
+    <Header title = "hardcoded"/>
+    <Header title = "hardcoded"/>
+
    </div>
   )
 }
